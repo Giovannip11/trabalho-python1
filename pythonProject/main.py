@@ -1,9 +1,24 @@
 import pandas as pd
 
 def validar_dados():
-    try:
-        df = pd.read_excel("C:/DevC/registroEmpregados.xlsx")
+    
+    print("Escolha a opção de resultado que deseja:")
+    print("1 - Exibir dados de cada empregado (Matrícula, Nome, Salário Bruto, Descontos, Salário Líquido)")
+    print("2 - Exibir apenas o Total dos Salários Brutos")
+    opcao = input("Digite 1 ou 2: ")
 
+    
+    if opcao not in ["1", "2"]:
+        print("Opção inválida! Tente novamente.")
+        return
+
+    salarios_totais = []  
+
+    try:
+       
+        df = pd.read_excel("C:\\Users\\Usuário\\Desktop\\trabalho-python1-main\\registroEmpregados.xlsx")
+
+        
         if 'Matrícula' in df.columns:
             for index, row in df.iterrows():
                 matricula = row['Matrícula']
@@ -12,10 +27,10 @@ def validar_dados():
                 salario_hora = row['Salário Hora']
                 horas_trabalhadas = row['Horas Trabalhadas']
 
-                # Validação dos dados
+                
                 if not isinstance(matricula, (int, float)):
                     print(f"Erro na linha {index}: Matrícula deve ser numérica.")
-                    continue  # Pular para a próxima linha
+                    continue  
                 if not nome.replace(" ", "").isalpha():
                     print(f"Erro na linha {index}: Nome deve conter apenas caracteres alfabéticos.")
                     continue
@@ -29,13 +44,26 @@ def validar_dados():
                     print(f"Erro na linha {index}: Horas Trabalhadas deve ser um valor numérico.")
                     continue
 
-                # Calcular o salário total
+               
                 salario_total = calcular_salario(nome, salario_hora, horas_trabalhadas)
-                # Calcular o desconto
+                salarios_totais.append(salario_total)  
                 desconto = calcular_desconto(salario_total)
-                # Calcular o salário líquido
-                salario_liquido = calcular_salario_liquido(salario_total, desconto)
-                print(f"Salário líquido de {nome}: R$ {salario_liquido:.2f}")
+                salario_liquido = calcular_salario_liquido(nome, salario_total, desconto)
+
+                
+                if opcao == "1":
+                    print("\n--- Dados do Empregado ---")
+                    print(f"Matrícula: {matricula}")
+                    print(f"Nome: {nome}")
+                    print(f"Salário Bruto: R$ {salario_total:.2f}")
+                    print(f"Desconto: R$ {desconto:.2f}")
+                    print(f"Salário Líquido: R$ {salario_liquido:.2f}")
+                    print("-------------------------")
+
+            
+            total_bruto = total_salario_bruto(salarios_totais)
+            if opcao == "2":
+                print(f"\nTotal dos salários brutos: R$ {total_bruto:.2f}")
 
         else:
             print("A coluna 'Matrícula' não foi encontrada no arquivo.")
@@ -45,17 +73,19 @@ def validar_dados():
 
 def calcular_salario(nome, salario_hora, horas_trabalhadas):
     salario_total = salario_hora * horas_trabalhadas
-    print(f"Salário total de {nome}: R$ {salario_total:.2f}")
-    return salario_total  # Retorne o salário total
+    return salario_total  
 
 def calcular_desconto(salario_total):
     desconto = salario_total * 0.10
-    print(f"Desconto de 10%: R$ {desconto:.2f}")
-    return desconto  # Retorne o desconto
+    return desconto 
 
-def calcular_salario_liquido(salario_total, desconto):
-    return salario_total - desconto  # Salário líquido é o total menos o desconto
+def calcular_salario_liquido(nome, salario_total, desconto):
+    salario_liquido = salario_total - desconto 
+    return salario_liquido
+
+def total_salario_bruto(lista_salarios):
+    total_salario = sum(lista_salarios)
+    return total_salario
+
 
 validar_dados()
-
-
